@@ -25,7 +25,7 @@ function main() {
         return {
           result: parameters.ZONES,
           success: true
-        }
+        };
       }
       console.log("Retrieving Current List of Zones from Cloudflare");
       return listZones(parameters);
@@ -55,9 +55,9 @@ function main() {
                 recordsArr.push(record);
               }
             }
-          })
+          });
         }
-      })
+      });
       return recordsArr;
     }).then(recordsArr => {
       // Update DNS Records
@@ -76,7 +76,7 @@ function main() {
             console.log("Record Update Failed for", record, "with Error", response.name);
           }
         });
-      })
+      });
     });
 }
 
@@ -108,14 +108,14 @@ function listZones(parameters) {
         method: "GET",
         mode: "cors",
         headers: {
-          "X-Auth-Email": parameters["EMAIL"],
-          "X-Auth-Key": parameters["API_KEY"],
+          "X-Auth-Email": parameters.EMAIL,
+          "X-Auth-Key": parameters.API_KEY,
           "Content-Type": "application/json"
         }
       }).then(response => response.json())
       .then(data => {
         resolve(data);
-      })
+      });
   });
 }
 
@@ -125,14 +125,14 @@ function listDNSRecords(parameters, zoneId) {
         method: "GET",
         mode: "cors",
         headers: {
-          "X-Auth-Email": parameters["EMAIL"],
-          "X-Auth-Key": parameters["API_KEY"],
+          "X-Auth-Email": parameters.EMAIL,
+          "X-Auth-Key": parameters.API_KEY,
           "Content-Type": "application/json"
         }
       }).then(response => response.json())
       .then(data => {
         resolve(data);
-      })
+      });
   });
 }
 
@@ -142,14 +142,14 @@ function updateRecord(parameters, record, update) {
         method: "PUT",
         mode: "cors",
         headers: {
-          "X-Auth-Email": parameters["EMAIL"],
-          "X-Auth-Key": parameters["API_KEY"],
+          "X-Auth-Email": parameters.EMAIL,
+          "X-Auth-Key": parameters.API_KEY,
           "Content-Type": "application/json"
         },
         body: JSON.stringify(update)
       }).then(response => response.json())
       .then(data => {
         resolve(data);
-      })
+      });
   });
 }
