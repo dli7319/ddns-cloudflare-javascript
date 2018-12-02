@@ -1,0 +1,22 @@
+{
+  "name": "ddns-cloudflare-javascript",
+  "version": "1.0.0",
+  "description": "Another DDNS Updater for Cloudflare written in Javascript.<br>\r This will scan for all \"A\" records and update their IPs.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dli7319/ddns-cloudflare-javascript.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dli7319/ddns-cloudflare-javascript/issues"
+  },
+  "homepage": "https://github.com/dli7319/ddns-cloudflare-javascript#readme",
+  "dependencies": {
+    "node-fetch": "^2.3.0"
+  }
+}

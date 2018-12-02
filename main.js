@@ -82,7 +82,8 @@ function main() {
 
 function readParameters() {
   return new Promise(resolve => {
-    fs.readFile('parameters.json', "utf8", (err, data) => {
+    let filePath = process.argv.length >= 3 ? process.argv[2] : "parameters.json";
+    fs.readFile(filePath, "utf8", (err, data) => {
       if (err) {
         console.error("Cannot read parameters.json", err);
         process.exit();

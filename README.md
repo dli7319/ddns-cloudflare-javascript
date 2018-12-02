@@ -1,6 +1,7 @@
 # ddns-cloudflare-javascript
 Another DDNS Updater for Cloudflare written in Javascript.<br>
-This will scan for all "A" records and update their IPs.
+This will scan for all "A" records and update their IPs.<br>
+Uses node-fetch.
 
 ------------
 
