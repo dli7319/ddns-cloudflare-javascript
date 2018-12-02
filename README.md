@@ -11,4 +11,4 @@ Usage:
 * Run `node main.js`
 * Make a cron job to run this every so often with `crontab -e`<br>
 Appending
-`0 */2 * * * node /full/path/to/ddns-cloudflare-javascript/main.js >/dev/null 2>&1`
+`0 */2 * * * node /full/path/to/ddns-cloudflare-javascript/main.js /full/path/to/ddns-cloudflare-javascript/parameters.json >/dev/null 2>&1`
