@@ -6,7 +6,7 @@ Uses node-fetch.
 ------------
 
 Usage:
-* Fill in `parameters_example.json` will information from your Cloudflare Account. You can remove the zones array to scan for all zones.
+* Fill in `parameters_example.json` with information from your Cloudflare Account. You can remove the zones array to scan for all zones.
 * Rename `parameters_example.json` to `parameters.json`
 * Run `node main.js`
 * Make a cron job to run this every so often with `crontab -e`<br>

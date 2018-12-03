@@ -1,7 +1,6 @@
 {
   "API_KEY": "123456789abcde",
   "EMAIL": "myemail@example.org",
-  "USER_SERVICE_KEY": "v1.0-123456789abcdefg",
   "ZONES": [{
     "id": "1234",
     "name": "example.org"
