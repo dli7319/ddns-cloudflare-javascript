@@ -22,8 +22,12 @@ function main() {
     }).then(() => {
       // Get Zones from file or from Cloudflare API
       if (parameters.ZONES) {
+        let zones = parameters.ZONES;
+        if (!Array.isArray(zones)) {
+          zones = [zones];
+        }
         return {
-          result: parameters.ZONES,
+          result: zones,
           success: true
         };
       }
