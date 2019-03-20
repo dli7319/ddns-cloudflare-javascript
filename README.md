@@ -14,5 +14,5 @@ Usage:
 * Fill in `parameters.json` with information from your Cloudflare Account. You can remove the zones array to scan for all zones.
 * Run `node main.js` to update records on Cloudflare.
 * Make a cron job to run this every so often with `crontab -e`  
-Appending
-`0 */2 * * * node /full/path/to/ddns-cloudflare-javascript/main.js /full/path/to/ddns-cloudflare-javascript/parameters.json >/dev/null 2>&1`
+Appending the following to update every 15 minutes
+`*/15 * * * * node /full/path/to/ddns-cloudflare-javascript/main.js /full/path/to/ddns-cloudflare-javascript/parameters.json >/dev/null 2>&1`
