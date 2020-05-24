@@ -1,5 +1,6 @@
 {
-  "TOKEN": "123456789abcde",
+  "API_KEY": "123456789abcde",
+  "EMAIL": "myemail@example.org",
   "ZONES": [{
     "id": "1234",
     "name": "example.org"
