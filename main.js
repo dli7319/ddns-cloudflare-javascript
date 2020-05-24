@@ -53,7 +53,9 @@ function main() {
         } else {
           records.result.forEach(record => {
             if (record.type === 'A') {
-              if (record.content === currentIP) {
+              if (parameters.EXCLUSIONS && parameters.EXCLUSIONS.includes(record.name)) {
+                console.log("Skipping:", record.name);
+              } else if (record.content === currentIP) {
                 console.log("Record Already Up To Date:", record.name);
               } else {
                 recordsArr.push(record);
