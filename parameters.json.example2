@@ -1,0 +1,13 @@
+{
+  "TOKEN": "123456789abcde",
+  "ZONES": [{
+    "id": "1234",
+    "name": "example.org"
+  }, {
+    "id": "5678",
+    "name": "example2.org"
+  }],
+  "EXCLUSIONS": [
+    "store.example.org"
+  ]
+}
