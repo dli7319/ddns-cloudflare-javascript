@@ -1,8 +1,11 @@
 {
-  "name": "ddns-cloudflare-javascript",
+  "name": "@david18284/ddns-cloudflare",
   "version": "1.0.0",
-  "description": "Another DDNS Updater for Cloudflare written in Javascript.<br>\r This will scan for all \"A\" records and update their IPs.",
-  "main": "main.js",
+  "description": "A DDNS Updater for Cloudflare.<br>\r This will scan for all \"A\" records and update their IPs.",
+  "main": "./build/index.js",
+  "bin": {
+    "ddns-cloudflare": "./bin/cli.js"
+  },
   "scripts": {
     "start": "npm run compile && node build/index.js",
     "compile": "babel src -d build",
@@ -12,16 +15,18 @@
     "type": "git",
     "url": "git+https://github.com/dli7319/ddns-cloudflare-javascript.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "David Li",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/dli7319/ddns-cloudflare-javascript/issues"
   },
   "homepage": "https://github.com/dli7319/ddns-cloudflare-javascript#readme",
   "dependencies": {
+    "node-fetch": "^2.3.0"
+  },
+  "devDependencies": {
     "@babel/cli": "^7.10.5",
     "@babel/core": "^7.11.4",
-    "@babel/preset-env": "^7.11.0",
-    "node-fetch": "^2.3.0"
+    "@babel/preset-env": "^7.11.0"
   }
 }
