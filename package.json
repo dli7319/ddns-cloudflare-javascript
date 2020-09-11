@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/dli7319/ddns-cloudflare-javascript#readme",
   "dependencies": {
-    "node-fetch": "^2.3.0"
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.10.5",
