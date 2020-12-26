@@ -2,7 +2,6 @@ import fs from "fs";
 import fetch from "node-fetch";
 import {CONSTANTS} from "./constants";
 import {ARecord} from "./a_record";
-import {PTRRecord} from "./ptr_record";
 
 export class DDNSUpdater {
   constructor() {
@@ -142,19 +141,34 @@ export class DDNSUpdater {
     });
   }
 
-  listDNSRecords(zoneId) {
-    return new Promise(resolve => {
-      fetch(
-        CONSTANTS.cloudflare_endpoint + "zones/" + zoneId + "/dns_records",
+  async listDNSRecords(zoneId) {
+    const dnsRecords = [];
+    let currentPage = 1;
+    let emptyResults = false;
+    let success = true;
+    while (!emptyResults && success) {
+      let pageResults = await fetch(
+        CONSTANTS.cloudflare_endpoint +
+          "zones/" +
+          zoneId +
+          "/dns_records?page=" +
+          currentPage +
+          "&per_page=20",
         {
           method: "GET",
           mode: "cors",
           headers: this.getHeaders()
         }
-      )
-        .then(response => response.json())
-        .then(data => resolve(data));
-    });
+      ).then(response => response.json());
+      success = success && pageResults.success;
+      dnsRecords.push(pageResults.result);
+      emptyResults = (pageResults.result.length == 0);
+      currentPage += 1;
+    }
+    return {
+      success: success,
+      result: dnsRecords.flat()
+    };
   }
 
   updateRecord(record) {
