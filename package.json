@@ -15,7 +15,8 @@
   "scripts": {
     "start": "npm run compile && node build/index.js",
     "compile": "babel src -d build",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "npm run compile"
   },
   "repository": {
     "type": "git",
