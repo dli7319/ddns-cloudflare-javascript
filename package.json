@@ -6,6 +6,7 @@
   "bin": {
     "ddns-cloudflare": "./bin/cli.js"
   },
+  "engines" : { "node" : ">=14.0.0" },
   "scripts": {
     "start": "npm run compile && node build/index.js",
     "compile": "babel src -d build",
@@ -23,6 +24,7 @@
   "homepage": "https://github.com/dli7319/ddns-cloudflare-javascript#readme",
   "dependencies": {
     "@babel/runtime": "^7.14.6",
+    "js-yaml": "^4.1.0",
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {

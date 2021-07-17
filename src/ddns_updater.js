@@ -1,5 +1,8 @@
+import path from "path";
 import fs from "fs";
+import * as fsPromises from "fs/promises";
 import fetch from "node-fetch";
+import yaml from "js-yaml";
 import {CONSTANTS} from "./constants";
 import {ARecord} from "./a_record";
 
@@ -21,7 +24,11 @@ export class DDNSUpdater {
       .then(this.listZones.bind(this))
       .then(this.getAllDDNSRecords.bind(this))
       .then(this.parseDDNSRecords.bind(this))
-      .then(this.updateAllDDNSRecords.bind(this));
+      .then(this.updateAllDDNSRecords.bind(this))
+      .catch(error => {
+        console.error(error);
+        process.exit(1);
+      });
   }
 
   parseDDNSRecords(zones) {
@@ -85,18 +92,29 @@ export class DDNSUpdater {
     return Promise.all(promises);
   }
 
-  readParameters() {
-    return new Promise(resolve => {
-      const filePath =
-        process.argv.length >= 3 ? process.argv[2] : "parameters.json";
-      fs.readFile(filePath, "utf8", (err, data) => {
-        if (err) {
-          console.error("Cannot read parameters.json", err);
-          process.exit();
-        }
-        resolve(this.processParameters(JSON.parse(data)));
-      });
-    });
+  async readParameters() {
+    let filePath =
+      process.argv.length >= 3
+        ? process.argv[2]
+        : await this.findParametersFile();
+    const fileData = await fsPromises.readFile(filePath, "utf8");
+    const parsedData = yaml.load(fileData);
+    return this.processParameters(parsedData);
+  }
+
+  async findParametersFile() {
+    let filePath = "";
+    const potentialPaths = ["parameters.yaml", "parameters.json"];
+    for (let i = 0; filePath == "" && i < potentialPaths.length; i++) {
+      try {
+        await fsPromises.access(potentialPaths[i], fs.constants.R_OK);
+        filePath = potentialPaths[i];
+      } catch {}
+    }
+    if (filePath === "") {
+      throw new Error("Failed to find the parameters file.");
+    }
+    return filePath;
   }
 
   /**
@@ -162,7 +180,7 @@ export class DDNSUpdater {
       ).then(response => response.json());
       success = success && pageResults.success;
       dnsRecords.push(pageResults.result);
-      emptyResults = (pageResults.result.length == 0);
+      emptyResults = pageResults.result.length == 0;
       currentPage += 1;
     }
     return {
