@@ -24,7 +24,7 @@ To use a local IP, name the interface under `LOCAL_INTERFACE`.
 As an interface can have multiple IPs, you should add an IP index here.
 ```yaml
   LOCAL_INTERFACE:
-    name: "docker0"
+    name: "eth0"
     ip_index: 0
 ```
 
