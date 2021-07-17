@@ -1,6 +1,7 @@
 import path from "path";
 import fs from "fs";
 import * as fsPromises from "fs/promises";
+
 import fetch from "node-fetch";
 import yaml from "js-yaml";
 import {ArgumentParser} from "argparse";
@@ -98,8 +99,7 @@ export class DDNSUpdater {
   getAllDDNSRecords(zones) {
     // Get DNS records from Cloudflare API
     if (!zones.success) {
-      console.error("Could not read zones");
-      process.exit();
+      throw new Error("Could not read zones.");
     }
     const promises = [];
     zones.result.forEach(zone => {
@@ -221,8 +221,7 @@ export class DDNSUpdater {
       headers["X-Auth-Email"] = parameters.EMAIL;
       headers["X-Auth-Key"] = parameters.API_KEY;
     } else {
-      console.error("No authentication provided in parameters.json");
-      process.exit(1);
+      throw new Error("No authentication provided in parameters.json");
     }
     if (keys) {
       Object.assign(headers, keys);
