@@ -139,6 +139,10 @@ export class DDNSUpdater {
     if (this.parameters.LOCAL_INTERFACE) {
       return this.getLocalIP();
     }
+    return this.getWebIP();
+  }
+
+  async getWebIP() {
     for (let index in CONSTANTS.webip_endpoints) {
       const endpoint = CONSTANTS.webip_endpoints[index];
       const response = await fetch(endpoint);
