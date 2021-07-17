@@ -19,14 +19,23 @@ After installation, you can run it using `ddns-cloudflare parameters.yaml`.
 ## Configuration
 See `parameters.example.yaml`.
 
-### Allowlist:
+### Local IP
+To use a local IP, name the interface under `LOCAL_INTERFACE`.  
+As an interface can have multiple IPs, you should add an IP index here.
+```yaml
+  LOCAL_INTERFACE:
+    name: "docker0"
+    ip_index: 0
+```
+
+### Allowlist
 To create an allowlist of records, add an `EXCLUSIONS` to the parameters file. These A records will be ignored.
 ```yaml
   EXCLUSIONS:
     - "store.example.org"
 ```
 
-### Denylist:
+### Denylist
 To create a denylist of records, add an `INCLUSIONS` key to the parameters file. Other A records will be ignored.
 ```yaml
   INCLUSIONS:

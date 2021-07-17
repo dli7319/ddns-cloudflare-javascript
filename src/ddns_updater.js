@@ -1,6 +1,7 @@
 import path from "path";
 import fs from "fs";
 import * as fsPromises from "fs/promises";
+import os from "os";
 
 import fetch from "node-fetch";
 import yaml from "js-yaml";
@@ -16,17 +17,11 @@ export class DDNSUpdater {
     this.setupArgParser();
   }
 
-  start() {
-    const parametersPromise = this.readParameters();
-    const currentIPPromise = this.getCurrentIP();
-    Promise.all([parametersPromise, currentIPPromise])
-      .then(values => {
-        // Get Parameters from file and current IP from online
-        this.parameters = values[0];
-        this.currentIP = values[1].ip;
-        console.log(`Retrieved Current IP: ${this.currentIP}`);
-      })
-      .then(this.listZones.bind(this))
+  async start() {
+    this.parameters = await this.readParameters();
+    this.currentIP = await this.getCurrentIP();
+    console.log("Current IP: " + this.currentIP);
+    await this.listZones()
       .then(this.getAllDDNSRecords.bind(this))
       .then(this.parseDDNSRecords.bind(this))
       .then(this.updateAllDDNSRecords.bind(this))
@@ -141,12 +136,31 @@ export class DDNSUpdater {
   }
 
   async getCurrentIP() {
-    return await fetch(CONSTANTS.webip_endpoint).then(response =>
-      response.json()
-    );
+    if (this.parameters.LOCAL_INTERFACE) {
+      return this.getLocalIP();
+    }
+    for (let index in CONSTANTS.webip_endpoints) {
+      const endpoint = CONSTANTS.webip_endpoints[index];
+      const response = await fetch(endpoint);
+      if (response.status === 200) {
+        return response.text();
+      }
+    }
+    throw new Error("Could not get the current IP");
   }
 
-  listZones() {
+  getLocalIP() {
+    const local_interface_params = this.parameters.LOCAL_INTERFACE;
+    const interfaces = os.networkInterfaces();
+    if (!(local_interface_params.name in interfaces)) {
+      throw new Error("Interface not found" + local_interface_params.name);
+    }
+    const selectedInterface = interfaces[local_interface_params.name];
+    const selectedNet = selectedInterface[local_interface_params.ip_index];
+    return selectedNet.address;
+  }
+
+  async listZones() {
     // Get Zones from parameters file.
     if (this.parameters.ZONES) {
       const zones = this.parameters.ZONES;
