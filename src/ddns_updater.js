@@ -128,14 +128,10 @@ export class DDNSUpdater {
     return parameters;
   }
 
-  getCurrentIP() {
-    return new Promise(resolve => {
-      fetch(CONSTANTS.webip_endpoint)
-        .then(response => response.json())
-        .then(data => {
-          resolve(data);
-        });
-    });
+  async getCurrentIP() {
+    return await fetch(CONSTANTS.webip_endpoint).then(response =>
+      response.json()
+    );
   }
 
   listZones() {
@@ -148,15 +144,11 @@ export class DDNSUpdater {
       };
     }
     console.log("Retrieving Current List of Zones from Cloudflare");
-    return new Promise(resolve => {
-      fetch(CONSTANTS.cloudflare_endpoint + "zones", {
-        method: "GET",
-        mode: "cors",
-        headers: this.getHeaders()
-      })
-        .then(response => response.json())
-        .then(data => resolve(data));
-    });
+    return fetch(CONSTANTS.cloudflare_endpoint + "zones", {
+      method: "GET",
+      mode: "cors",
+      headers: this.getHeaders()
+    }).then(response => response.json());
   }
 
   async listDNSRecords(zoneId) {
@@ -191,23 +183,19 @@ export class DDNSUpdater {
 
   updateRecord(record) {
     const update = record.getUpdate();
-    return new Promise(resolve => {
-      fetch(
-        CONSTANTS.cloudflare_endpoint +
-          "zones/" +
-          record.zone_id +
-          "/dns_records/" +
-          record.id,
-        {
-          method: "PUT",
-          mode: "cors",
-          headers: this.getHeaders(),
-          body: JSON.stringify(update)
-        }
-      )
-        .then(response => response.json())
-        .then(data => resolve(data));
-    });
+    return fetch(
+      CONSTANTS.cloudflare_endpoint +
+        "zones/" +
+        record.zone_id +
+        "/dns_records/" +
+        record.id,
+      {
+        method: "PUT",
+        mode: "cors",
+        headers: this.getHeaders(),
+        body: JSON.stringify(update)
+      }
+    ).then(response => response.json());
   }
 
   getHeaders(keys = null) {
