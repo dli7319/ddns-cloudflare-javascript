@@ -9,6 +9,9 @@
   "engines": {
     "node": ">=14.0.0"
   },
+  "files": [
+    "build/*"
+  ],
   "scripts": {
     "start": "npm run compile && node build/index.js",
     "compile": "babel src -d build",
