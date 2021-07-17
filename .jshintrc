@@ -1,4 +1,5 @@
 {
   "esversion": 10,
-  "node": true
+  "node": true,
+  "-W014": true
 }
