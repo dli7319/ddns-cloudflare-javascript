@@ -3,12 +3,16 @@ import fs from "fs";
 import * as fsPromises from "fs/promises";
 import fetch from "node-fetch";
 import yaml from "js-yaml";
+import {ArgumentParser} from "argparse";
+
 import {CONSTANTS} from "./constants";
 import {ARecord} from "./a_record";
+import {version} from "../package.json";
 
 export class DDNSUpdater {
   constructor() {
     this.parameters = {};
+    this.setupArgParser();
   }
 
   start() {
@@ -29,6 +33,18 @@ export class DDNSUpdater {
         console.error(error);
         process.exit(1);
       });
+  }
+
+  setupArgParser() {
+    const parser = new ArgumentParser({
+      description: "A DDNS updater for Cloudflare DDNS."
+    });
+    parser.add_argument("-v", "--version", {action: "version", version});
+    parser.add_argument("file", {
+      help: "Parameters file",
+      nargs: "?"
+    });
+    this.args = parser.parse_args();
   }
 
   parseDDNSRecords(zones) {
@@ -93,28 +109,24 @@ export class DDNSUpdater {
   }
 
   async readParameters() {
-    let filePath =
-      process.argv.length >= 3
-        ? process.argv[2]
-        : await this.findParametersFile();
+    const filePath = await this.findParametersFile(this.args.file);
     const fileData = await fsPromises.readFile(filePath, "utf8");
     const parsedData = yaml.load(fileData);
     return this.processParameters(parsedData);
   }
 
-  async findParametersFile() {
-    let filePath = "";
+  async findParametersFile(filepath = "") {
     const potentialPaths = ["parameters.yaml", "parameters.json"];
-    for (let i = 0; filePath == "" && i < potentialPaths.length; i++) {
+    for (let i = 0; filepath === "" && i < potentialPaths.length; i++) {
       try {
         await fsPromises.access(potentialPaths[i], fs.constants.R_OK);
-        filePath = potentialPaths[i];
+        filepath = potentialPaths[i];
       } catch {}
     }
-    if (filePath === "") {
+    if (filepath === "") {
       throw new Error("Failed to find the parameters file.");
     }
-    return filePath;
+    return filepath;
   }
 
   /**

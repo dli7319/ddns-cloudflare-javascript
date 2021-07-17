@@ -29,6 +29,7 @@
   "homepage": "https://github.com/dli7319/ddns-cloudflare-javascript#readme",
   "dependencies": {
     "@babel/runtime": "^7.14.6",
+    "argparse": "^2.0.1",
     "js-yaml": "^4.1.0",
     "node-fetch": "^2.6.1"
   },
