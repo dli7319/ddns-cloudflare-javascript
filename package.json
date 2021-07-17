@@ -1,12 +1,14 @@
 {
   "name": "@david18284/ddns-cloudflare",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A DDNS Updater for Cloudflare.<br>\r This will scan for all \"A\" records and update their IPs.",
   "main": "./build/index.js",
   "bin": {
     "ddns-cloudflare": "./bin/cli.js"
   },
-  "engines" : { "node" : ">=14.0.0" },
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "scripts": {
     "start": "npm run compile && node build/index.js",
     "compile": "babel src -d build",
