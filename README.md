@@ -11,7 +11,7 @@ This will scan for all "A" records and update their IPs.
 4. Run `npm start` to update records on Cloudflare.
 5. Make a cron job to run this every so often with `crontab -e`.  
    Appending the following to update every 15 minutes:  
-   `*/15 * * * * cd /full/path/to/ddns-cloudflare-javascript/ && npm start >/dev/null 2>&1`
+   `*/15 * * * * cd /full/path/to/ddns-cloudflare-javascript/update_records.sh`
 
 You can also install this with `npm i -g @david18284/ddns-cloudflare`.  
 After installation, you can run it using `ddns-cloudflare parameters.yaml`.
