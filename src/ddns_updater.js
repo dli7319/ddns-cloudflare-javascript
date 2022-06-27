@@ -11,7 +11,6 @@ import {ArgumentParser} from "argparse";
 import {CONSTANTS} from "./constants";
 import {ARecord} from "./a_record";
 import {version} from "../package.json";
-import { exit } from "process";
 
 export class DDNSUpdater {
   constructor() {
@@ -23,7 +22,6 @@ export class DDNSUpdater {
     this.parameters = await this.readParameters();
     this.currentIP = await this.getCurrentIP();
     console.log("Current IP: " + this.currentIP);
-    exit(0);
     await this.listZones()
       .then(this.getAllDDNSRecords.bind(this))
       .then(this.parseDDNSRecords.bind(this))
