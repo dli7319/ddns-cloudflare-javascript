@@ -1,7 +1,6 @@
----
-  TOKEN: "123456789abcde"
-  ZONES:
-    - id: "123ab"
-      name: "example.org"
-  EXCLUSIONS:
-    - "store.example.org"
+TOKEN: "123456789abcde"
+ZONES:
+  - id: "123ab"
+    name: "example.org"
+EXCLUSIONS:
+  - "store.example.org"
