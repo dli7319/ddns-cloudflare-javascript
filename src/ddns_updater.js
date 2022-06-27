@@ -2,6 +2,7 @@ import path from "path";
 import fs from "fs";
 import * as fsPromises from "fs/promises";
 import os from "os";
+import https from 'node:https';
 
 import fetch from "node-fetch";
 import yaml from "js-yaml";
@@ -10,6 +11,7 @@ import {ArgumentParser} from "argparse";
 import {CONSTANTS} from "./constants";
 import {ARecord} from "./a_record";
 import {version} from "../package.json";
+import { exit } from "process";
 
 export class DDNSUpdater {
   constructor() {
@@ -21,6 +23,7 @@ export class DDNSUpdater {
     this.parameters = await this.readParameters();
     this.currentIP = await this.getCurrentIP();
     console.log("Current IP: " + this.currentIP);
+    exit(0);
     await this.listZones()
       .then(this.getAllDDNSRecords.bind(this))
       .then(this.parseDDNSRecords.bind(this))
@@ -143,9 +146,14 @@ export class DDNSUpdater {
   }
 
   async getWebIP() {
+    const httpsAgent = new https.Agent({
+      family: 4
+    });
     for (let index in CONSTANTS.webip_endpoints) {
       const endpoint = CONSTANTS.webip_endpoints[index];
-      const response = await fetch(endpoint);
+      const response = await fetch(endpoint, {
+        agent: httpsAgent
+      }).catch(() => {return {status: 400}});
       if (response.status === 200) {
         return response.text();
       }
