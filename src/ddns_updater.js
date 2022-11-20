@@ -6,11 +6,12 @@ import https from 'node:https';
 
 import fetch from "node-fetch";
 import yaml from "js-yaml";
-import {ArgumentParser} from "argparse";
+import { ArgumentParser } from "argparse";
 
-import {CONSTANTS} from "./constants";
-import {ARecord} from "./a_record";
-import {version} from "../package.json";
+import { CONSTANTS } from "./constants";
+import { ARecord } from "./a_record";
+import { AAAARecord } from "./aaaa_record";
+import { version } from "../package.json";
 
 export class DDNSUpdater {
   constructor() {
@@ -21,7 +22,11 @@ export class DDNSUpdater {
   async start() {
     this.parameters = await this.readParameters();
     this.currentIP = await this.getCurrentIP();
-    console.log("Current IP: " + this.currentIP);
+    console.log("Current IPv4: " + this.currentIP);
+    if (this.parameters.ENABLE_IPV6) {
+      this.currentIPv6 = await this.getWebIP(true);
+      console.log("Current IPv6: " + this.currentIPv6);
+    }
     await this.listZones()
       .then(this.getAllDDNSRecords.bind(this))
       .then(this.parseDDNSRecords.bind(this))
@@ -36,7 +41,7 @@ export class DDNSUpdater {
     const parser = new ArgumentParser({
       description: "A DDNS updater for Cloudflare DDNS."
     });
-    parser.add_argument("-v", "--version", {action: "version", version});
+    parser.add_argument("-v", "--version", { action: "version", version });
     parser.add_argument("file", {
       help: "Parameters file",
       nargs: "?"
@@ -57,6 +62,9 @@ export class DDNSUpdater {
             case "A":
               recordsArr.push(new ARecord(record, parameters));
               break;
+            case "AAAA":
+              recordsArr.push(new AAAARecord(record, parameters));
+              break;
             default:
           }
         });
@@ -72,14 +80,18 @@ export class DDNSUpdater {
         console.log("Skipping:", record.name);
         return;
       }
-      record.updateIP(this.currentIP);
+      if (record instanceof ARecord && this.parameters.ENABLE_IPV4) {
+        record.updateIP(this.currentIP);
+      } else if (record instanceof AAAARecord && this.parameters.ENABLE_IPV6) {
+        record.updateIP(this.currentIPv6);
+      }
       if (!record.modified) {
-        console.log("Record Already Up To Date:", record.name);
+        console.log(`${record.type} Record Already Up To Date: ${record.name}`);
         return;
       }
       this.updateRecord(record).then(response => {
         if (response.success) {
-          console.log("Updated Record For:", response.result.name);
+          console.log(`Updated ${record.type} Record For: ${response.result.name}`);
         } else {
           console.log(
             "Record Update Failed for",
@@ -117,7 +129,7 @@ export class DDNSUpdater {
       try {
         await fsPromises.access(potentialPaths[i], fs.constants.R_OK);
         filepath = potentialPaths[i];
-      } catch {}
+      } catch { }
     }
     if (filepath === "") {
       throw new Error("Failed to find the parameters file.");
@@ -132,6 +144,9 @@ export class DDNSUpdater {
    * @return {object}            Updated parameters.
    */
   processParameters(parameters) {
+    if (!("ENABLE_IPV4" in parameters)) {
+      parameters.ENABLE_IPV4 = true;
+    }
     parameters.RECORD_TYPES = new Set(parameters.RECORD_TYPES);
     return parameters;
   }
@@ -143,15 +158,17 @@ export class DDNSUpdater {
     return this.getWebIP();
   }
 
-  async getWebIP() {
+  async getWebIP(v6 = false) {
     const httpsAgent = new https.Agent({
-      family: 4
+      family: v6 ? 6 : 4
     });
-    for (let index in CONSTANTS.webip_endpoints) {
-      const endpoint = CONSTANTS.webip_endpoints[index];
+    const endpoints = v6 ?
+      CONSTANTS.webipv6_endpoints :
+      CONSTANTS.webip_endpoints;
+    for (let endpoint of endpoints) {
       const response = await fetch(endpoint, {
         agent: httpsAgent
-      }).catch(() => {return {status: 400}});
+      }).catch(() => { return { status: 400 } });
       if (response.status === 200) {
         return response.text();
       }
@@ -195,11 +212,11 @@ export class DDNSUpdater {
     while (!emptyResults && success) {
       let pageResults = await fetch(
         CONSTANTS.cloudflare_endpoint +
-          "zones/" +
-          zoneId +
-          "/dns_records?page=" +
-          currentPage +
-          "&per_page=20",
+        "zones/" +
+        zoneId +
+        "/dns_records?page=" +
+        currentPage +
+        "&per_page=20",
         {
           method: "GET",
           mode: "cors",
@@ -221,10 +238,10 @@ export class DDNSUpdater {
     const update = record.getUpdate();
     return fetch(
       CONSTANTS.cloudflare_endpoint +
-        "zones/" +
-        record.zone_id +
-        "/dns_records/" +
-        record.id,
+      "zones/" +
+      record.zone_id +
+      "/dns_records/" +
+      record.id,
       {
         method: "PUT",
         mode: "cors",

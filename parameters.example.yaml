@@ -2,5 +2,7 @@ TOKEN: "123456789abcde"
 ZONES:
   - id: "123ab"
     name: "example.org"
+ENABLE_IPV4: true
+ENABLE_IPV6: true
 EXCLUSIONS:
   - "store.example.org"
