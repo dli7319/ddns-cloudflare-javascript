@@ -20,7 +20,7 @@ After installation, you can run it using `ddns-cloudflare parameters.yaml`.
 See `parameters.example.yaml`.
 
 ### Local IP
-To use a local IP, name the interface under `LOCAL_INTERFACE`.  
+To use a local IP, name the interface under `LOCAL_INTERFACE` or `LOCAL_INTERFACE_V6`.  
 As an interface can have multiple IPs, you should add an IP index here.
 ```yaml
   LOCAL_INTERFACE:

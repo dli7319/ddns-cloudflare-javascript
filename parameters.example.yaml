@@ -3,6 +3,13 @@ ZONES:
   - id: "123ab"
     name: "example.org"
 ENABLE_IPV4: true
-ENABLE_IPV6: true
+# Use this to update AAAA records
+# ENABLE_IPV6: true
+# Add this option to use the ip address without querying an API.
+# LOCAL_INTERFACE_V6:
+#   name: enx00e04c3bb334
+#   ip_index: 2
+# Use this option to update only the prefix.
+# IPV6_UPDATE_PREFIX: 56
 EXCLUSIONS:
   - "store.example.org"

@@ -1,4 +1,3 @@
-import path from "path";
 import fs from "fs";
 import * as fsPromises from "fs/promises";
 import os from "os";
@@ -24,7 +23,7 @@ export class DDNSUpdater {
     this.currentIP = await this.getCurrentIP();
     console.log("Current IPv4: " + this.currentIP);
     if (this.parameters.ENABLE_IPV6) {
-      this.currentIPv6 = await this.getWebIP(true);
+      this.currentIPv6 = await this.getCurrentIP(true);
       console.log("Current IPv6: " + this.currentIPv6);
     }
     await this.listZones()
@@ -83,7 +82,7 @@ export class DDNSUpdater {
       if (record instanceof ARecord && this.parameters.ENABLE_IPV4) {
         record.updateIP(this.currentIP);
       } else if (record instanceof AAAARecord && this.parameters.ENABLE_IPV6) {
-        record.updateIP(this.currentIPv6);
+        record.updateIP(this.currentIPv6, this.parameters.IPV6_UPDATE_PREFIX || 128);
       }
       if (!record.modified) {
         console.log(`${record.type} Record Already Up To Date: ${record.name}`);
@@ -151,11 +150,12 @@ export class DDNSUpdater {
     return parameters;
   }
 
-  async getCurrentIP() {
-    if (this.parameters.LOCAL_INTERFACE) {
-      return this.getLocalIP();
+  async getCurrentIP(v6 = false) {
+    if (!v6 && this.parameters.LOCAL_INTERFACE ||
+      v6 && this.parameters.LOCAL_INTERFACE_V6) {
+      return this.getLocalIP(v6);
     }
-    return this.getWebIP();
+    return this.getWebIP(v6);
   }
 
   async getWebIP(v6 = false) {
@@ -176,13 +176,23 @@ export class DDNSUpdater {
     throw new Error("Could not get the current IP");
   }
 
-  getLocalIP() {
-    const local_interface_params = this.parameters.LOCAL_INTERFACE;
+  getLocalIP(v6 = false) {
+    const local_interface_params = (v6 ?
+      this.parameters.LOCAL_INTERFACE_V6 :
+      this.parameters.LOCAL_INTERFACE);
     const interfaces = os.networkInterfaces();
     if (!(local_interface_params.name in interfaces)) {
       throw new Error("Interface not found" + local_interface_params.name);
     }
     const selectedInterface = interfaces[local_interface_params.name];
+    if (typeof local_interface_params.ip_index === "undefined") {
+      console.log("Available IPs for interface", local_interface_params.name);
+      selectedInterface.forEach((net, index) => {
+        console.log(index, net.address);
+      });
+      console.error("No IP index specified for interface " + local_interface_params.name);
+      process.exit(1);
+    }
     const selectedNet = selectedInterface[local_interface_params.ip_index];
     return selectedNet.address;
   }
