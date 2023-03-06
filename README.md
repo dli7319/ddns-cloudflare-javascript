@@ -13,9 +13,6 @@ This will update the IPs of A and AAAA records.
    Appending the following to update every 15 minutes:  
    `*/15 * * * * /full/path/to/ddns-cloudflare-javascript/update_records.sh`
 
-You can also install this with `npm i -g @david18284/ddns-cloudflare`.  
-After installation, you can run it using `ddns-cloudflare parameters.yaml`.
-
 ## Configuration
 See `parameters.example.yaml`.
 
